@@ -4,28 +4,31 @@
 InternetButton b = InternetButton();
 NtpTime* ntpTime;
 char buf[255];
+static int i = 0;
 
 void setup() {
     ntpTime = new NtpTime(15);  // Do an ntp update every 15 minutes;
     ntpTime->start();
 
     b.begin();
+    b.rainbow(10);
+    b.allLedsOff();
 }
 
 #ifdef DEBUG
  #define DEBUG_PRINT(fmt, ...) sprintf(buf, fmt, __VA_ARGS__); Particle.publish("debug",buf); 
 #else
- #define DEBUG_PRINT(x)
+ #define DEBUG_PRINT(fmt, ...)
 #endif
 
 
 void loop() {
     static unsigned long waitMillis = 0;
-    static int i = 0;
+    b.ledOn(0, 255,255,255);
 
     if(millis() > waitMillis) {
         DEBUG_PRINT("Clock is: %d", Time.now());
-        waitMillis = millis() + (1000);
+        waitMillis = millis() + (10000);
     }
   // starting 30 minutes before the alarm, set the LED brightness
 
