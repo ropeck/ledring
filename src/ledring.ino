@@ -5,13 +5,14 @@ InternetButton b = InternetButton();
 NtpTime* ntpTime;
 char buf[255];
 static int i = 0;
+static int alarm;
 
 void setup() {
     ntpTime = new NtpTime(15);  // Do an ntp update every 15 minutes;
     ntpTime->start();
-
+    alarm = Time.now() + 255 + 5;
     b.begin();
-    b.rainbow(10);
+//    b.rainbow(10);
     b.allLedsOff();
 }
 
@@ -21,24 +22,32 @@ void setup() {
  #define DEBUG_PRINT(fmt, ...)
 #endif
 
+int brightness(int when) {
+  // 0 to 255 over the 30 minutes before the alarm time
+  // pick a time for now as the target
+  static int br = 0;
+  int diff = when - Time.now();
+  br = 255;
+  if (diff < 255 && diff > 0) {
+    br = 255 - diff;
+  } else {
+    br = 0;
+  }
+  DEBUG_PRINT("br %d %d %d", br, when, Time.now());
+  return br;
+}
 
 void loop() {
     static unsigned long waitMillis = 0;
+    int br;
     b.ledOn(0, 255,255,255);
 
     if(millis() > waitMillis) {
         DEBUG_PRINT("Clock is: %d", Time.now());
-        waitMillis = millis() + (10000);
+        waitMillis = millis() + (1000);
+      br = brightness(alarm);
+      b.allLedsOn(br, br, br);
     }
-  // starting 30 minutes before the alarm, set the LED brightness
 
-  if (i<12) {
-    b.ledOn(i, 255,255,255);
-  }
-  if (i>=12 && i<24) {
-    b.advanceRainbow(256/12,0);
-  }
-  if (i==24) { i = 0; b.rainbow(0); }
-  i++;
   delay(100);
 }
