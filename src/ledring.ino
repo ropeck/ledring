@@ -27,12 +27,14 @@ int brightness(int when) {
   // pick a time for now as the target
   static int br = 0;
   int diff = when - Time.now();
-  br = 255;
+  br = 0;
+  if (diff < 0) {
+    br = 255;
+  } 
   if (diff < 255 && diff > 0) {
     br = 255 - diff;
-  } else {
-    br = 0;
   }
+  
   DEBUG_PRINT("br %d %d %d", br, when, Time.now());
   return br;
 }
