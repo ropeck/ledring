@@ -1,18 +1,30 @@
 #include "InternetButton.h"
+#include "ntp-time.h"
 
 InternetButton b = InternetButton();
+NtpTime* ntpTime;
 
-
-// setup() runs once, when the device is first turned on.
 void setup() {
+    ntpTime = new NtpTime(15);  // Do an ntp update every 15 minutes;
+    ntpTime->start();
+
     b.begin();
-    b.rainbow(0);
+//    b.allLightsOff();
 }
 
 int i = 0;
 
-// loop() runs over and over again, as quickly as it can execute.
 void loop() {
+    static unsigned long waitMillis = 0;
+    char buf[255];
+
+    if(millis() > waitMillis) {
+        sprintf(buf, "Clock is: %d", Time.now());
+        Particle.publish(buf);
+        waitMillis = millis() + (1000);
+    }
+  // starting 30 minutes before the alarm, set the LED brightness
+
   if (i<12) {
     b.ledOn(i, 255,255,255);
   }
