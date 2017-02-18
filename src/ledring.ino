@@ -22,10 +22,19 @@ void setup() {
  #define DEBUG_PRINT(fmt, ...)
 #endif
 
+
 int brightness(int when) {
   // 0 to 255 over the 30 minutes before the alarm time
   // pick a time for now as the target
+  tmElements_t tm;
+
   static int br = 0;
+  Time.breakTime(Time.now(), tm);
+  tm.hour = 6;
+  tm.minute = 0;
+  tm.second = 0;
+  when = Time.makeTime(tm);
+
   int diff = when - Time.now();
   br = 0;
   if (diff < 0) {
